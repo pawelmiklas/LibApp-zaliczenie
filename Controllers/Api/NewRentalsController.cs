@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using LibApp.Data;
 using LibApp.Dtos;
 using LibApp.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibApp.Controllers.Api
 {
@@ -15,9 +13,11 @@ namespace LibApp.Controllers.Api
     [ApiController]
     public class NewRentalsController : ControllerBase
     {
-        public NewRentalsController(ApplicationDbContext context)
+        public NewRentalsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signIn)
         {
             _context = context;
+            _userManager = userManager;
+            _signIn = signIn;
         }
 
         // POST /api/newRentals
@@ -55,5 +55,7 @@ namespace LibApp.Controllers.Api
         }
 
         private ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signIn;
     }
 }

@@ -41,7 +41,7 @@ namespace LibApp.Repositories
                 .Include(x => x.Genre)
                 .ToList();
 
-        public Book GetBookById(int id) => _context.Books.SingleOrDefault(x => x.Id == id);
+        public Book GetBookById(int id) => _context.Books.Include(x => x.Genre).SingleOrDefault(x => x.Id == id);
 
         public void Save()
         {

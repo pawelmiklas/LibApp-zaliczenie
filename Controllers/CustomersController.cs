@@ -5,6 +5,7 @@ using LibApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using LibApp.Models;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibApp.Controllers
 {
@@ -17,8 +18,9 @@ namespace LibApp.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "StoreManager,Owner")]
         public ViewResult Index()
-        {            
+        {
             return View();
         }
 

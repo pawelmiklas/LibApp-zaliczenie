@@ -6,6 +6,7 @@ using LibApp.ViewModels;
 using LibApp.Data;
 using Microsoft.EntityFrameworkCore;
 using LibApp.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibApp.Controllers
 {
@@ -20,10 +21,12 @@ namespace LibApp.Controllers
             _bookRepository = bookRepository;
         }
 
+        [Authorize(Roles = "User,StoreManager,Owner")]
         public IActionResult Index() => View(_bookRepository.GetAllBooks());
 
         public IActionResult Details(int id) => View(_bookRepository.GetBookById(id));
 
+        [Authorize(Roles = "StoreManager,Owner")]
         public IActionResult Edit(int id)
         {
             var book = _bookRepository.GetBookById(id);
@@ -40,6 +43,7 @@ namespace LibApp.Controllers
             });
         }
 
+        [Authorize(Roles = "StoreManager,Owner")]
         public IActionResult New() => View("BookForm", new BookFormViewModel
         {
             Genres = _context.Genre.ToList()
