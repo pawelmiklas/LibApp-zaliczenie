@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using LibApp.Data;
 using LibApp.Dtos;
 using LibApp.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using LibApp.Repositories;
 
 namespace LibApp.Controllers.Api
 {
@@ -16,25 +14,36 @@ namespace LibApp.Controllers.Api
     [ApiController]
     public class BooksController : ControllerBase
     {
-        public BooksController(ApplicationDbContext context, IMapper mapper)
+        private readonly ApplicationDbContext _context;
+        private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
+
+        public BooksController(ApplicationDbContext context, IBookRepository bookRepository, IMapper mapper)
         {
             _context = context;
+            _bookRepository = bookRepository;
             _mapper = mapper;
         }
 
-        // GET /api/books
         [HttpGet]
-        public IActionResult GetBooks()
+        public IEnumerable<BookDto> GetBooks(string query = null)
         {
-            var books = _context.Books
-                                .Include(b => b.Genre)
-                                .ToList()
-                                .Select(_mapper.Map<Book, BookDto>);
+            var booksQuery = _bookRepository.GetAllBooks().Where(x => x.NumberAvailable > 0).AsQueryable();
 
-            return Ok(books);
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                booksQuery = booksQuery.Where(b => b.Name.Contains(query));
+            }
+
+            return booksQuery.ToList().Select(_mapper.Map<Book, BookDto>);
         }
 
-        private ApplicationDbContext _context;
-        private IMapper _mapper;
+        [HttpDelete("{id}")]
+        public IActionResult RemoveBook(int id)
+        {
+            _bookRepository.DeleteBook(id);
+            _bookRepository.Save();
+            return Ok();
+        }
     }
 }

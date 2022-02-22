@@ -16,4 +16,13 @@ namespace LibApp.Profiles
             CreateMap<BookDto, Book>();
         }
     }
+
+    public class GenreProfile : Profile
+    {
+        public GenreProfile()
+        {
+            CreateMap<Genre, GenreDto>();
+            CreateMap<GenreDto, Genre>();
+        }
+    }
 }
